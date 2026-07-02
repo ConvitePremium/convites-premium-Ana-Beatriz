@@ -10,16 +10,16 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Ana Beatriz - 15 anos" />
   <meta property="og:description" content="Clique para abrir o convite." />
-  <meta property="og:image" content="https://convitepremium.github.io/convites-premium-1/assets/capa-whatsapp.jpg" />
-  <meta property="og:image:secure_url" content="https://convitepremium.github.io/convites-premium-1/assets/capa-whatsapp.jpg" />
-  <meta property="og:image:type" content="image/jpg" />
+  <meta property="og:image" content="https://convitepremium.github.io/convites-premium-Ana-Beatriz/assets/preview.jpg" />
+  <meta property="og:image:secure_url" content="https://convitepremium.github.io/convites-premium-Ana-Beatriz/assets/preview.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="675" />
   <meta property="og:url" content="https://convitepremium.github.io/convites-premium-Ana-Beatriz/" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Ana Beatriz - 15 anos" />
   <meta name="twitter:description" content="Clique para abrir o convite." />
-  <meta name="twitter:image" content="https://convitepremium.github.io/convites-premium-1/assets/capa-whatsapp.jpg" />
+  <meta name="twitter:image" content="https://convitepremium.github.io/convites-premium-Ana-Beatriz/assets/preview.jpg" />
 
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -105,18 +105,19 @@
     const fade = document.getElementById('fade');
     const loader = document.getElementById('loader');
 
-    const WHATSAPP_LINK = 'https://wa.me/558188114428?text=Ol%C3%A1%2C%20confirmo%20minha%20presen%C3%A7a%20no%20anivers%C3%A1rio%20de%2015%20anos%20da%20Ana%20Beatriz.';
-
-    // Compatibilidade iPhone/Safari:
-    // 1) o vídeo fica sempre mudo;
-    // 2) a música é destravada no toque do botão Iniciar;
-    // 3) se o iPhone pausar sozinho, tentamos tocar novamente ao entrar na tela principal.
     video.muted = true;
-    video.defaultMuted = true;
     video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
-    music.volume = 0.72;
+
+    async function playMusic(){
+      try {
+        music.volume = 0.72;
+        await music.play();
+      } catch(e) {}
+    }
+
+    const WHATSAPP_LINK = 'https://wa.me/558188114428?text=Ol%C3%A1%2C%20confirmo%20minha%20presen%C3%A7a%20no%20anivers%C3%A1rio%20de%2015%20anos%20da%20Ana%20Beatriz.';
 
     function hideAllScreens(){
       startScreen.classList.remove('active');
@@ -133,42 +134,30 @@
         presentesScreen.classList.remove('active');
         manualScreen.classList.remove('active');
         show(screen);
-        ensureMusic();
         fade.classList.remove('on');
       }, 550);
     }
     async function tryFullscreen(){
       try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen(); } catch(e) {}
     }
-    async function ensureMusic(){
-      try {
-        music.muted = false;
-        music.volume = 0.72;
-        await music.play();
-      } catch(e) {}
-    }
     function goMain(){
       video.pause();
-      ensureMusic();
+      playMusic();
       fadeTo(mainScreen);
     }
 
     startBtn.addEventListener('click', async () => {
       startBtn.disabled = true;
-      loader.classList.add('active');
       await tryFullscreen();
-      await ensureMusic();
+      loader.classList.add('active');
+      await playMusic();
       setTimeout(async () => {
         loader.classList.remove('active');
         show(videoScreen);
-        video.muted = true;
+        await playMusic();
         try { video.currentTime = 0; await video.play(); } catch(e) { goMain(); }
       }, 650);
     });
-
-    // Reforço para navegadores internos/iPhone: qualquer toque tenta manter a música ativa.
-    document.addEventListener('touchend', ensureMusic, {passive:true});
-    document.addEventListener('click', ensureMusic);
 
     video.addEventListener('ended', goMain);
     video.addEventListener('error', goMain);
